@@ -5,9 +5,11 @@ export function collisionHandler(
   player: Player,
   entities: BaseEntity[]
 ) {
+  const bottomP = player.pos.y + player.height
+
   const collidedWith = entities.find(e => (
-    player.pos.y + player.height <= e.pos.y &&
-    player.pos.y + player.height + player.velocity.y >= e.pos.y
+    bottomP <= e.pos.y &&
+    bottomP + player.velocity.y >= e.pos.y
   ) && (
     player.pos.x >= e.pos.x && player.pos.x <= e.pos.x + e.width
   ))

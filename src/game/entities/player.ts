@@ -1,4 +1,6 @@
 import { BaseEntity } from "./base-entity"
+import img from '../../assets/img/player.png'
+import { createImage } from "../utils/image"
 
 export class Player extends BaseEntity {
   public velocity = {
@@ -9,43 +11,28 @@ export class Player extends BaseEntity {
   private gravity = .5
   public runVelocity = 5
   public hasSupportUnderneath = false
-  private bound: { x: number, y: number }
   public isOnCollision = false
+  private img: CanvasImageSource
 
   constructor(
     ctx: CanvasRenderingContext2D,
-    pos: { x: number, y: number },
-    bound: { x: number, y: number }
+    pos: { x: number, y: number }
   ) {
-    super(50, 50, ctx, pos)
+    super(100, 100, ctx, pos)
 
-    this.bound = bound
+    this.img = createImage(img)
   }
 
   draw() {
     this.ctx.fillStyle = 'red'
 
-    const halfSize = Math.round(this.width / 2)
-
-    this.ctx.beginPath()
-    this.ctx.arc(
-      this.pos.x + halfSize,
-      this.pos.y + halfSize,
-      halfSize,
-      0,
-      2 * Math.PI,
-      false
-    )
-
-    this.ctx.fill()
+    this.ctx.drawImage(this.img, this.pos.x, this.pos.y, this.width, this.height)
   }
 
   update() {
-    const { pos, bound } = this
+    const { pos } = this
 
-    if ((
-      pos.y + this.height + this.velocity.y <= bound.y
-    ) && !this.isOnCollision) {
+    if (!this.isOnCollision) {
       this.velocity.y += this.gravity
       this.hasSupportUnderneath = false
     } else {
