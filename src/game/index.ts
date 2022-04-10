@@ -1,4 +1,7 @@
+import { Platform } from './entities/playform'
 import { Player } from './entities/player'
+import { collisionHandler } from './lib/collision-handler'
+import { handlePlayerMovement } from './lib/player-camera'
 
 export function init() {
   const canvas = document.getElementById('cnv') as HTMLCanvasElement
@@ -20,7 +23,17 @@ export function init() {
     y: canvas.height
   })
 
-  player.draw()
+  const platforms = [
+    new Platform(c, { x: 200, y: 500 })
+  ]
+
+  const drawInitialScene = () => {
+    player.draw()
+
+    platforms.forEach(p => p.draw())
+  }
+
+  drawInitialScene()
 
   const keys = {
     right: {
@@ -40,15 +53,11 @@ export function init() {
       canvas.width, canvas.height
     )
 
+    platforms.forEach(p => p.draw())
     player.update()
 
-    if (keys.left.pressed) {
-      player.move('left')
-    } else if (keys.right.pressed) {
-      player.move('right')
-    } else {
-      player.resetVeloc('x')
-    }
+    collisionHandler(player, platforms)
+    handlePlayerMovement(keys.left.pressed, keys.right.pressed, player, platforms)
   }
 
   window.addEventListener('keydown', ({ key }) => {

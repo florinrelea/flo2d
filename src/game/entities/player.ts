@@ -1,32 +1,51 @@
-export class Player {
-  private width = 50
-  private height = 50
-  private velocity = {
+import { BaseEntity } from "./base-entity"
+
+export class Player extends BaseEntity {
+  public velocity = {
     y: 5,
     x: 0
   }
   private jumpVeloc = 15
   private gravity = .5
-  private runVelocity = 5
-  private hasSupportUnderneath = false
+  public runVelocity = 5
+  public hasSupportUnderneath = false
+  private bound: { x: number, y: number }
+  public isOnCollision = false
 
   constructor(
-    private ctx: CanvasRenderingContext2D,
-    private pos: { x: number, y: number },
-    private bound: { x: number, y: number }
-  ) {}
+    ctx: CanvasRenderingContext2D,
+    pos: { x: number, y: number },
+    bound: { x: number, y: number }
+  ) {
+    super(50, 50, ctx, pos)
+
+    this.bound = bound
+  }
 
   draw() {
-    this.ctx.fillRect(
-      this.pos.x, this.pos.y,
-      this.width, this.height
+    this.ctx.fillStyle = 'red'
+
+    const halfSize = Math.round(this.width / 2)
+
+    this.ctx.beginPath()
+    this.ctx.arc(
+      this.pos.x + halfSize,
+      this.pos.y + halfSize,
+      halfSize,
+      0,
+      2 * Math.PI,
+      false
     )
+
+    this.ctx.fill()
   }
 
   update() {
     const { pos, bound } = this
 
-    if (pos.y + this.height + this.velocity.y <= bound.y) {
+    if ((
+      pos.y + this.height + this.velocity.y <= bound.y
+    ) && !this.isOnCollision) {
       this.velocity.y += this.gravity
       this.hasSupportUnderneath = false
     } else {
